@@ -19,7 +19,7 @@ fn run_server(config: Config) {
 
         match listener.accept() {
             Ok( (stream, addr) ) => {
-                let mut locked_cons = connections.lock().expect("Failed to lock clients");
+                let locked_cons = connections.lock().expect("Failed to lock clients");
                 if locked_cons.len() >= config.max_connections {
                     eprintln!("max connections reached");
                     continue; // stream is freed
