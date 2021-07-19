@@ -1,5 +1,4 @@
 use std::net::TcpListener;
-use std::sync::mpsc::{Sender, Receiver, channel};
 use std::sync::{Arc, Mutex};
 
 mod connections;
@@ -25,18 +24,10 @@ fn run_server(config: Config) {
                     eprintln!("max connections reached");
                     continue; // stream is freed
                 }
-
-                eprintln!("Accepted connection from: {:?}", addr);
-
-                // Create a sender / receiver pair and add the sender
-                // to the `connections` vector.
-                //
-                // We use this vector to send messages to all connections
-                let (sender, receiver) = channel();
-                locked_cons.push(sender);
                 drop(locked_cons);
 
-                handle_client(stream, receiver, Arc::clone(&connections));
+                eprintln!("Accepted connection from: {:?}", addr);
+                handle_client(stream, Arc::clone(&connections));
             }
             Err(e) => eprintln!("{:?}", e),
         }
